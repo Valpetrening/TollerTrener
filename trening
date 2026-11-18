@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TollerTrener 2.0</title>
+
+<style>
+:root{
+--green:#2d6a4f;
+--light:#d8f3dc;
+--gold:#ffb703;
+--white:#ffffff;
+--dark:#1f2937;
+--success:#2ecc71;
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:"Segoe UI",sans-serif;
+}
+
+body{
+background:#f4fff8;
+color:var(--dark);
+}
+
+header{
+background:linear-gradient(135deg,#2d6a4f,#40916c);
+color:white;
+text-align:center;
+padding:30px;
+}
+
+header h1{
+font-size:2.2rem;
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+padding:20px;
+}
+
+.dashboard{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:15px;
+margin-bottom:20px;
+}
+
+.card{
+background:white;
+border-radius:15px;
+padding:20px;
+box-shadow:0 4px 10px rgba(0,0,0,.08);
+}
+
+.progress{
+width:100%;
+height:22px;
+background:#ddd;
+border-radius:20px;
+overflow:hidden;
+}
+
+.progressFill{
+height:100%;
+width:0%;
+background:linear-gradient(90deg,#2ecc71,#80ed99);
+transition:1s;
+}
+
+.tabs{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+margin-bottom:20px;
+}
+
+.tab{
+background:white;
+border:none;
+padding:10px 14px;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.tab.active{
+background:var(--green);
+color:white;
+}
+
+.phase{
+display:none;
+}
+
+.phase.active{
+display:block;
+}
+
+.exercise{
+background:white;
+margin-bottom:12px;
+padding:15px;
+border-radius:12px;
+box-shadow:0 3px 8px rgba(0,0,0,.06);
+}
+
+.exercise h3{
+color:var(--green);
+}
+
+button.level{
+border:none;
+padding:8px;
+margin:4px;
+border-radius:8px;
+cursor:pointer;
+background:#e9ecef;
+}
+
+button.level.done{
+background:var(--success);
+color:white;
+}
+
+.badge{
+display:inline-block;
+padding:8px 12px;
+background:var(--gold);
+border-radius:10px;
+margin:4px;
+font-weight:bold;
+}
+
+.stat{
+font-size:2rem;
+font-weight:bold;
+color:var(--green);
+}
+
+ul{
+padding-left:20px;
+}
+
+footer{
+text-align:center;
+padding:20px;
+color:#666;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🐾 TollerTrener 2.0</h1>
+<p>Fra 8 uker til 2 år - Målet er den perfekte familiehunden</p>
+</header>
+
+<div class="container">
+
+<div class="dashboard">
+
+<div class="card">
+<h2>Total progresjon</h2>
+<div class="progress">
+<div id="globalProgress" class="progressFill"></div>
+</div>
+<div id="percent" class="stat">0%</div>
+</div>
+
+<div class="card">
+<h2>🏅 Hundenivå</h2>
+<div id="rank">Ny valp</div>
+</div>
+
+<div class="card">
+<h2>⭐ Familiepoeng</h2>
+<div id="points" class="stat">0</div>
+</div>
+
+<div class="card">
+<h2>🎯 Sluttmål</h2>
+<div id="goalPercent" class="stat">0%</div>
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>🐕 Ferdigheter</h2>
+
+Ro inne
+<div class="progress"><div class="progressFill" id="skill-ro"></div></div>
+
+Innkalling
+<div class="progress"><div class="progressFill" id="skill-inn"></div></div>
+
+Nosework
+<div class="progress"><div class="progressFill" id="skill-nose"></div></div>
+
+Tolling
+<div class="progress"><div class="progressFill" id="skill-toll"></div></div>
+
+Barn
+<div class="progress"><div class="progressFill" id="skill-barn"></div></div>
+
+Andre hunder
+<div class="progress"><div class="progressFill" id="skill-hund"></div></div>
+
+Friluftsliv
+<div class="progress"><div class="progressFill" id="skill-friluft"></div></div>
+
+</div>
+
+<div class="tabs" id="tabs"></div>
+
+<div id="content"></div>
+
+<div class="card">
+<h2>🏆 Merker</h2>
+
+<div id="badges"></div>
+
+</div>
+
+<div class="card">
+
+<h2>✅ Livsliste</h2>
+
+<ul id="lifelist"></ul>
+
+</div>
+
+</div>
+
+<footer>
+Laget for familien og deres framtidige supertoller ❤️
+</footer>
+
+<script>
+
+const phases = [
+
+{
+name:"8-16 uker",
+tasks:[
+"Kontakt",
+"Navnet sitt",
+"Ro på teppe",
+"Innkalling",
+"Sosialisering barn",
+"Sosialisering hunder",
+"Biltrening",
+"Kloklipp",
+"Nosework start",
+"Miljøtrening"
+]
+},
+
+{
+name:"4-6 måneder",
+tasks:[
+"Båndtrening",
+"Bli",
+"Passering",
+"Apportlek",
+"Sporstart",
+"Bymiljø",
+"Skogstur",
+"Bobil",
+"Besøk hos venner",
+"Ignorere forstyrrelser"
+]
+},
+
+{
+name:"6-12 måneder",
+tasks:[
+"Langline",
+"Innkalling med forstyrrelser",
+"Spor",
+"Nosework",
+"Barn og aktivitet",
+"Kafe",
+"Buss og by",
+"Fjellturer",
+"Vannarbeid",
+"Hunder i lek"
+]
+},
+
+{
+name:"12-18 måneder",
+tasks:[
+"Løs i skogen",
+"Sykkel",
+"Ski",
+"Overnatting",
+"Sosiale miljøer",
+"Apportering",
+"Passering nivå 2",
+"Ro hjemme",
+"Neseøvelser",
+"Kontroll på avstand"
+]
+},
+
+{
+name:"18-24 måneder",
+tasks:[
+"Tolling grunnlag",
+"Avansert nosework",
+"Langtur",
+"Fjellhelg",
+"Pålitelig innkalling",
+"Familiehundtest",
+"Samarbeid",
+"Ro inne",
+"Hverdagslydighet",
+"Trygg familiehund"
+]
+}
+
+];
+
+const lifeList = [
+
+"Første biltur",
+"Første møte med katt",
+"Første møte med hest",
+"Første skogstur",
+"Første fjelltur",
+"Første svømmetur",
+"Første snøtur",
+"Første skitur",
+"Første sykkeltur",
+"Første bobilferie",
+"Første besøk på skole",
+"Første besøk på jobb",
+"Første møte med baby",
+"Første hundekafe",
+"Første overnatting borte"
+
+];
+
+const tabs=document.getElementById("tabs");
+const content=document.getElementById("content");
+
+function save(k,v){
+localStorage.setItem(k,v);
+}
+
+function load(k){
+return localStorage.getItem(k);
+}
+
+function build(){
+
+tabs.innerHTML="";
+content.innerHTML="";
+
+phases.forEach((phase,p)=>{
+
+tabs.innerHTML += `
+<button class="tab ${p===0?'active':''}" onclick="showPhase(${p},event)">
+${phase.name}
+</button>
+`;
+
+let html=`<div class="phase ${p===0?'active':''}" id="phase${p}">`;
+
+phase.tasks.forEach((task,t)=>{
+
+const key=`task_${p}_${t}`;
+const val=load(key)||0;
+
+html += `
+<div class="exercise">
+<h3>${task}</h3>
+
+<button class="level ${val>=1?'done':''}"
+onclick="setLevel('${key}',1)">
+Nivå 1
+</button>
+
+<button class="level ${val>=2?'done':''}"
+onclick="setLevel('${key}',2)">
+Nivå 2
+</button>
+
+<button class="level ${val>=3?'done':''}"
+onclick="setLevel('${key}',3)">
+Nivå 3
+</button>
+
+</div>
+`;
+
+});
+
+html += "</div>";
+
+content.innerHTML += html;
+
+});
+
+buildLifeList();
+
+calculate();
+
+}
+
+function buildLifeList(){
+
+let html="";
+
+lifeList.forEach((item,index)=>{
+
+const key="life_"+index;
+const done=load(key)==="1";
+
+html += `
+<li>
+<label>
+<input type="checkbox"
+${done?"checked":""}
+onchange="toggleLife('${key}')">
+${item}
+</label>
+</li>
+`;
+
+});
+
+document.getElementById("lifelist").innerHTML=html;
+
+}
+
+function toggleLife(key){
+
+save(key,
+load(key)==="1" ? 0 : 1
+);
+
+calculate();
+buildLifeList();
+
+}
+
+function setLevel(key,level){
+
+save(key,level);
+
+calculate();
+
+build();
+
+}
+
+function showPhase(id,event){
+
+document.querySelectorAll(".phase")
+.forEach(x=>x.classList.remove("active"));
+
+document.querySelectorAll(".tab")
+.forEach(x=>x.classList.remove("active"));
+
+document.getElementById("phase"+id)
+.classList.add("active");
+
+event.target.classList.add("active");
+}
+
+function calculate(){
+
+let total=0;
+let done=0;
+let points=0;
+
+phases.forEach((phase,p)=>{
+
+phase.tasks.forEach((task,t)=>{
+
+total += 3;
+
+let val=parseInt(
+load(`task_${p}_${t}`) || 0
+);
+
+done += val;
+
+points += val * 10;
+
+});
+
+});
+
+const percent =
+Math.round((done/total)*100);
+
+document.getElementById("percent")
+.innerText=percent+"%";
+
+document
+.getElementById("globalProgress")
+.style.width=percent+"%";
+
+document
+.getElementById("points")
+.innerText=points;
+
+document
+.getElementById("goalPercent")
+.innerText=percent+"%";
+
+let rank="🐾 Ny valp";
+
+if(percent>20) rank="🦴 Valpevenn";
+if(percent>40) rank="🐕 Tollerpartner";
+if(percent>60) rank="🏅 Turhund";
+if(percent>80) rank="🌟 Tollerstjerne";
+if(percent===100) rank="👑 Superfamilien";
+
+document
+.getElementById("rank")
+.innerText=rank;
+
+document
+.getElementById("skill-ro")
+.style.width=Math.min(percent+10,100)+"%";
+
+document
+.getElementById("skill-inn")
+.style.width=percent+"%";
+
+document
+.getElementById("skill-nose")
+.style.width=Math.max(percent-5,0)+"%";
+
+document
+.getElementById("skill-toll")
+.style.width=Math.max(percent-10,0)+"%";
+
+document
+.getElementById("skill-barn")
+.style.width=Math.min(percent+5,100)+"%";
+
+document
+.getElementById("skill-hund")
+.style.width=percent+"%";
+
+document
+.getElementById("skill-friluft")
+.style.width=Math.min(percent+15,100)+"%";
+
+let badges=[];
+
+if(percent>=10) badges.push("🐾 Valpevenn");
+if(percent>=25) badges.push("🚗 Bilproff");
+if(percent>=40) badges.push("👧 Barnas venn");
+if(percent>=50) badges.push("🌲 Turkamerat");
+if(percent>=60) badges.push("👃 Noseworkhelt");
+if(percent>=75) badges.push("🐕 Innkallingsmester");
+if(percent>=90) badges.push("🦆 Tollingtalent");
+if(percent==100) badges.push("👑 Superfamilien");
+
+document.getElementById("badges")
+.innerHTML=badges
+.map(x=>`<span class="badge">${x}</span>`)
+.join("");
+
+}
+
+build();
+
+</script>
+
+</body>
+</html>
