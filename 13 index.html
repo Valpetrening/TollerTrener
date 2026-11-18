@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TollerTrener 5.0</title>
+
+<style>
+:root{
+--green:#2d6a4f;
+--green2:#40916c;
+--bg:#f4fff8;
+--card:#ffffff;
+--gold:#ffb703;
+--success:#2ecc71;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,sans-serif}
+
+body{
+background:var(--bg);
+}
+
+header{
+background:linear-gradient(135deg,var(--green),var(--green2));
+color:white;
+padding:25px;
+text-align:center;
+}
+
+.container{
+max-width:1300px;
+margin:auto;
+padding:20px;
+}
+
+.dashboard{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+margin-bottom:20px;
+}
+
+.card{
+background:white;
+padding:18px;
+border-radius:15px;
+box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+.progress{
+height:22px;
+background:#ddd;
+border-radius:20px;
+overflow:hidden;
+}
+
+.fill{
+height:100%;
+width:0;
+background:linear-gradient(90deg,#2ecc71,#80ed99);
+}
+
+.tabs{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+margin-bottom:15px;
+}
+
+.tab{
+background:white;
+border:none;
+padding:10px;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.tab.active{
+background:var(--green);
+color:white;
+}
+
+.phase{
+display:none;
+}
+
+.phase.active{
+display:block;
+}
+
+.section-title{
+background:var(--green);
+color:white;
+padding:12px;
+border-radius:10px;
+margin:15px 0;
+}
+
+.exercise{
+background:white;
+padding:15px;
+border-radius:12px;
+margin-bottom:12px;
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+.level{
+display:block;
+width:100%;
+text-align:left;
+margin-top:6px;
+padding:10px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+background:#eef2f3;
+}
+
+.level.done{
+background:var(--success);
+color:white;
+}
+
+.badge{
+display:inline-block;
+padding:8px 12px;
+background:var(--gold);
+border-radius:10px;
+margin:4px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🐾 TollerTrener 5.0</h1>
+<p>Fra 8 uker til 2 år</p>
+<p>Familiehund • Innkalling • Nosework • Tolling • Friluftsliv • Sosialisering</p>
+</header>
+
+<div class="container">
+
+<div class="dashboard">
+
+<div class="card">
+<h3>Progresjon</h3>
+<div class="progress">
+<div class="fill" id="fill"></div>
+</div>
+<h2 id="percent">0%</h2>
+</div>
+
+<div class="card">
+<h3>Nivå</h3>
+<h2 id="rank">🐾 Valp</h2>
+</div>
+
+<div class="card">
+<h3>Poeng</h3>
+<h2 id="points">0</h2>
+</div>
+
+<div class="card">
+<h3>Merker</h3>
+<div id="badges"></div>
+</div>
+
+</div>
+
+<div class="tabs" id="tabs"></div>
+
+<div id="content"></div>
+
+</div>
+
+<script>
+
+const templatePeriod = (name)=>({
+
+name,
+
+sections:[
+
+{
+sectionName:"🏠 Trening inne",
+exercises:[
+
+{
+title:"Kontakt og samarbeid",
+description:"Bygge relasjon og samarbeid.",
+levels:[
+"God kontakt hjemme",
+"Kontakt med forstyrrelser",
+"Sterk frivillig kontakt"
+]
+},
+
+{
+title:"Ro på teppet",
+description:"Lære av-knappen.",
+levels:[
+"Går til teppet",
+"Legger seg",
+"Slapper av i 10 minutter"
+]
+},
+
+{
+title:"Håndtering",
+description:"Pelsstell og veterinærforberedelser.",
+levels:[
+"Poter",
+"Tenner og ører",
+"Full håndtering"
+]
+},
+
+{
+title:"Familiehund hjemme",
+description:"Rolig sammen med familien.",
+levels:[
+"Rolig 15 min",
+"Rolig 1 time",
+"Rolig hele kvelden"
+]
+}
+
+]
+},
+
+{
+sectionName:"🎯 Treningsrom",
+exercises:[
+
+{
+title:"Godbitsøk",
+description:"Grunnlag for nosework.",
+levels:[
+"Synlig søk",
+"Skjult søk",
+"Flere skjul"
+]
+},
+
+{
+title:"Kartongsøk",
+description:"Bruke nesen aktivt.",
+levels:[
+"1 kartong",
+"3 kartonger",
+"5 kartonger"
+]
+},
+
+{
+title:"Apport",
+description:"Grunnlag for tolling.",
+levels:[
+"Henter",
+"Leverer",
+"Leverer i hånd"
+]
+},
+
+{
+title:"Targetarbeid",
+description:"Kroppskontroll og presisjon.",
+levels:[
+"Berører target",
+"Følger target",
+"Jobber på signal"
+]
+}
+
+]
+},
+
+{
+sectionName:"🌲 Utendørs",
+exercises:[
+
+{
+title:"Innkalling",
+description:"Verdens viktigste øvelse.",
+levels:[
+"Kommer i rolig miljø",
+"Kommer med forstyrrelser",
+"Kommer fra lek"
+]
+},
+
+{
+title:"Miljøtrening",
+description:"Nye steder og inntrykk.",
+levels:[
+"Rolig miljø",
+"Nytt miljø",
+"Travelt miljø"
+]
+},
+
+{
+title:"Andre hunder",
+description:"Trygge møter.",
+levels:[
+"Ser andre hunder",
+"Passerer",
+"Rolige møter"
+]
+},
+
+{
+title:"Turkamerat",
+description:"Skog og friluftsliv.",
+levels:[
+"Kort tur",
+"Lengre tur",
+"Halv dagstur"
+]
+}
+
+]
+}
+
+]
+
+});
+
+const phases=[
+
+templatePeriod("8-10 uker"),
+templatePeriod("10-12 uker"),
+templatePeriod("12-16 uker"),
+templatePeriod("4-5 måneder"),
+templatePeriod("5-6 måneder"),
+templatePeriod("6-8 måneder"),
+templatePeriod("8-10 måneder"),
+templatePeriod("10-12 måneder"),
+templatePeriod("12-15 måneder"),
+templatePeriod("15-18 måneder"),
+templatePeriod("18-21 måneder"),
+templatePeriod("21-24 måneder")
+
+];
+
+function load(k){
+return Number(localStorage.getItem(k)||0);
+}
+
+function save(k,v){
+localStorage.setItem(k,v);
+}
+
+function setLevel(key,level){
+save(key,level);
+render();
+}
+
+function showPhase(index,event){
+
+document.querySelectorAll(".phase")
+.forEach(p=>p.classList.remove("active"));
+
+document.querySelectorAll(".tab")
+.forEach(t=>t.classList.remove("active"));
+
+document.getElementById("phase"+index)
+.classList.add("active");
+
+event.target.classList.add("active");
+}
+
+function calculate(){
+
+let total=0;
+let done=0;
+
+phases.forEach((p,pi)=>{
+p.sections.forEach((s,si)=>{
+s.exercises.forEach((e,ei)=>{
+
+total += 3;
+done += load(`${pi}_${si}_${ei}`);
+
+});
+});
+});
+
+const percent=Math.round((done/total)*100);
+
+document.getElementById("percent").innerText=percent+"%";
+document.getElementById("points").innerText=done*10;
+document.getElementById("fill").style.width=percent+"%";
+
+let rank="🐾 Valp";
+
+if(percent>=20) rank="🦴 Ung valp";
+if(percent>=40) rank="🐕 Unghund";
+if(percent>=60) rank="🏅 Turhund";
+if(percent>=80) rank="🌟 Tollerstjerne";
+if(percent===100) rank="👑 Superfamilien";
+
+document.getElementById("rank").innerText=rank;
+
+const badges=[];
+
+if(percent>=10) badges.push("🐾 Valpevenn");
+if(percent>=25) badges.push("🚗 Miljøhelt");
+if(percent>=40) badges.push("👧 Barnas venn");
+if(percent>=60) badges.push("👃 Noseworkhelt");
+if(percent>=75) badges.push("🦆 Tollingtalent");
+if(percent>=100) badges.push("👑 Familiehundmester");
+
+document.getElementById("badges").innerHTML =
+badges.map(x=>`<span class="badge">${x}</span>`).join("");
+
+}
+
+function render(){
+
+const tabs=document.getElementById("tabs");
+const content=document.getElementById("content");
+
+tabs.innerHTML="";
+content.innerHTML="";
+
+phases.forEach((phase,p)=>{
+
+tabs.innerHTML += `
+<button class="tab ${p===0?'active':''}"
+onclick="showPhase(${p},event)">
+${phase.name}
+</button>
+`;
+
+let html=`
+<div class="phase ${p===0?'active':''}" id="phase${p}">
+`;
+
+phase.sections.forEach((section,s)=>{
+
+html += `
+<div class="section-title">
+${section.sectionName}
+</div>
+`;
+
+section.exercises.forEach((exercise,e)=>{
+
+const progress = load(`${p}_${s}_${e}`);
+
+html += `
+<div class="exercise">
+
+<h3>${exercise.title}</h3>
+
+<p>${exercise.description}</p>
+
+${exercise.levels.map((lvl,i)=>`
+
+<button
+class="level ${progress>=i+1?'done':''}"
+onclick="setLevel('${p}_${s}_${e}',${i+1})">
+
+⭐ Nivå ${i+1}
+<br><br>
+${lvl}
+
+</button>
+
+`).join("")}
+
+</div>
+`;
+
+});
+
+});
+
+html += `</div>`;
+
+content.innerHTML += html;
+
+});
+
+calculate();
+
+}
+
+render();
+
+</script>
+
+</body>
+</html>
