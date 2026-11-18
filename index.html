@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TollerTrener - Valpeprogram 8-16 uker</title>
+
+<style>
+:root{
+    --primary:#2d6a4f;
+    --secondary:#40916c;
+    --accent:#ffb703;
+    --bg:#f4fff8;
+    --card:#ffffff;
+    --text:#1f2937;
+    --success:#2ecc71;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#d8f3dc,#f4fff8);
+    min-height:100vh;
+    padding:20px;
+    color:var(--text);
+}
+
+h1{
+    text-align:center;
+    color:var(--primary);
+    margin-bottom:10px;
+}
+
+p.subtitle{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.dashboard{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.card{
+    background:var(--card);
+    border-radius:18px;
+    padding:18px;
+    box-shadow:0 6px 20px rgba(0,0,0,.08);
+}
+
+.stat{
+    font-size:2.1rem;
+    font-weight:bold;
+    color:var(--primary);
+}
+
+.progress-wrap{
+    margin-top:15px;
+}
+
+.progress{
+    background:#ddd;
+    height:22px;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.progress-fill{
+    background:linear-gradient(90deg,var(--success),#80ed99);
+    width:0%;
+    height:100%;
+    transition:1s;
+}
+
+.tabs{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:15px;
+    justify-content:center;
+}
+
+button.tab{
+    border:none;
+    background:white;
+    padding:12px 18px;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+button.active{
+    background:var(--primary);
+    color:white;
+}
+
+.section{
+    display:none;
+}
+
+.section.active{
+    display:block;
+}
+
+.exercise{
+    background:white;
+    margin-bottom:12px;
+    padding:15px;
+    border-radius:15px;
+    box-shadow:0 4px 12px rgba(0,0,0,.06);
+}
+
+.exercise h3{
+    color:var(--primary);
+    margin-bottom:5px;
+}
+
+.levels{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:10px;
+}
+
+.level-btn{
+    border:none;
+    padding:10px;
+    border-radius:10px;
+    cursor:pointer;
+    background:#e9ecef;
+}
+
+.level-btn.done{
+    background:var(--success);
+    color:white;
+}
+
+.badge{
+    display:inline-block;
+    background:var(--accent);
+    color:#000;
+    font-weight:bold;
+    border-radius:10px;
+    padding:4px 8px;
+    margin-left:5px;
+}
+
+.reward{
+    text-align:center;
+    font-size:1.3rem;
+    margin-top:15px;
+    font-weight:bold;
+}
+
+.goal-box{
+    margin-top:20px;
+    background:white;
+    padding:20px;
+    border-radius:18px;
+    box-shadow:0 6px 18px rgba(0,0,0,.08);
+}
+
+.target{
+    margin:10px 0;
+}
+
+footer{
+    text-align:center;
+    margin-top:20px;
+    color:#555;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🐾 TollerTrener 🐾</h1>
+<p class="subtitle">
+Mitt oppdrag: Hjelpe familien å få verdens beste toller!
+</p>
+
+<div class="dashboard">
+
+<div class="card">
+<h2>Total progresjon</h2>
+<div class="stat" id="percent">0%</div>
+
+<div class="progress-wrap">
+<div class="progress">
+<div class="progress-fill" id="fill"></div>
+</div>
+</div>
+</div>
+
+<div class="card">
+<h2>🏆 Ferdighetsnivå</h2>
+<p id="rank">Ny valpeeier</p>
+</div>
+
+<div class="card">
+<h2>✅ Fullførte nivåer</h2>
+<div class="stat" id="completed">0</div>
+</div>
+
+</div>
+
+<div class="tabs">
+<button class="tab active" onclick="showTab('uke8')">8-12 uker</button>
+<button class="tab" onclick="showTab('uke12')">12-16 uker</button>
+<button class="tab" onclick="showTab('maal')">Målet vårt</button>
+</div>
+
+<div id="uke8" class="section active"></div>
+<div id="uke12" class="section"></div>
+
+<div id="maal" class="section">
+
+<div class="goal-box">
+
+<h2>🎯 Langsiktige mål</h2>
+
+<div class="target">✅ Rolig inne i huset</div>
+<div class="target">✅ Glad i familien</div>
+<div class="target">✅ Kommer når vi roper</div>
+<div class="target">✅ Elsker nosework</div>
+<div class="target">✅ God på spor og søk</div>
+<div class="target">✅ Flink med barn</div>
+<div class="target">✅ Trygg med andre dyr</div>
+<div class="target">✅ Kan bli med i bobil</div>
+<div class="target">✅ God turkamerat</div>
+<div class="target">✅ Tolling og jaktaktiviteter som voksen</div>
+
+<div class="reward" id="goalReward">
+🌱 Valpen er helt i starten av reisen!
+</div>
+
+</div>
+</div>
+
+<footer>
+Laget for hele familien ❤️
+</footer>
+
+<script>
+
+const exercises = {
+
+uke8:[
+{
+name:"Frivillig kontakt",
+location:"Hjemme",
+info:"Belønn når valpen ser på dere.",
+levels:[
+"Ser på deg",
+"Holder kontakten 2 sek",
+"Holder kontakten med forstyrrelser"
+]
+},
+{
+name:"Navnet mitt",
+location:"Hjemme",
+info:"Valpen reagerer på navnet.",
+levels:[
+"Ser mot deg",
+"Kommer mot deg",
+"Kommer fra annet rom"
+]
+},
+{
+name:"Ro på teppet",
+location:"Hjemme",
+info:"Lære av-knapp.",
+levels:[
+"Går til teppet",
+"Legger seg",
+"Slapper av 1 minutt"
+]
+},
+{
+name:"Følge etter",
+location:"Hjemme",
+info:"Bygge samarbeid.",
+levels:[
+"Følger et par skritt",
+"Følger flere meter",
+"Følger med distraksjoner"
+]
+},
+{
+name:"Finn godbiten",
+location:"Treningsrom",
+info:"Begynnende nosework.",
+levels:[
+"Synlig godbit",
+"Delvis skjult",
+"Flere steder"
+]
+},
+{
+name:"Pappesken",
+location:"Treningsrom",
+info:"Utforske og søke.",
+levels:[
+"Åpen eske",
+"Litt skjult godbit",
+"Flere bokser"
+]
+},
+{
+name:"Frivillig apport",
+location:"Treningsrom",
+info:"Grunnlag for apport.",
+levels:[
+"Henter leke",
+"Tar med tilbake",
+"Leverer frivillig"
+]
+},
+{
+name:"Kom-signal",
+location:"Ute",
+info:"Verdens viktigste øvelse.",
+levels:[
+"På vei mot deg",
+"Kommer på signal",
+"Kommer med forstyrrelser"
+]
+},
+{
+name:"Følge i bånd",
+location:"Ute",
+info:"Slakt bånd.",
+levels:[
+"1 meter",
+"5 meter",
+"Tur i nærmiljø"
+]
+}
+],
+
+uke12:[
+{
+name:"Ro på teppet med forstyrrelser",
+location:"Hjemme",
+info:"Ro mens livet skjer.",
+levels:[
+"Rolig 1 min",
+"Rolig med bevegelse",
+"Rolig når familien er aktiv"
+]
+},
+{
+name:"Bli på plassen",
+location:"Hjemme",
+info:"Selvkontroll.",
+levels:[
+"5 sekunder",
+"20 sekunder",
+"1 minutt"
+]
+},
+{
+name:"Sitt på signal",
+location:"Treningsrom",
+info:"Samarbeid.",
+levels:[
+"Sitt inne",
+"Sitt med avstand",
+"Sitt med forstyrrelser"
+]
+},
+{
+name:"Ligg",
+location:"Treningsrom",
+info:"Ro og fokus.",
+levels:[
+"Ligg med håndsignal",
+"Ligg på ord",
+"Ligg med venting"
+]
+},
+{
+name:"Finn leken",
+location:"Treningsrom",
+info:"Nosework.",
+levels:[
+"Synlig",
+"Delvis skjult",
+"Helt skjult"
+]
+},
+{
+name:"Flere søkebokser",
+location:"Treningsrom",
+info:"Søk.",
+levels:[
+"3 bokser",
+"5 bokser",
+"Riktig boks direkte"
+]
+},
+{
+name:"Små menneskespor",
+location:"Treningsrom",
+info:"Sporarbeid.",
+levels:[
+"5 meter",
+"10 meter",
+"15 meter"
+]
+},
+{
+name:"Innkalling med jackpot",
+location:"Ute",
+info:"Superbelønning.",
+levels:[
+"Kommer raskt",
+"Kommer fra lek",
+"Kommer fra store forstyrrelser"
+]
+},
+{
+name:"Godbitsøk i skogen",
+location:"Ute",
+info:"Bruk nesen.",
+levels:[
+"Lite område",
+"Større område",
+"Søker selvstendig"
+]
+}
+]
+
+};
+
+function getProgress(id){
+return Number(localStorage.getItem(id)) || 0;
+}
+
+function setProgress(id,val){
+localStorage.setItem(id,val);
+render();
+}
+
+function createExercise(ex,index,containerName){
+
+const div=document.createElement("div");
+div.className="exercise";
+
+let html=`
+<h3>${ex.name}</h3>
+<p><b>📍 ${ex.location}</b></p>
+<p>${ex.info}</p>
+<div class="levels">
+`;
+
+ex.levels.forEach((lvl,lvlIndex)=>{
+
+const progress=getProgress(containerName+"_"+index);
+
+html += `
+<button
+class="level-btn ${progress>lvlIndex ? 'done' : ''}"
+onclick="advance('${containerName}_${index}',${lvlIndex+1})">
+⭐ ${lvl}
+</button>
+`;
+
+});
+
+html += "</div>";
+
+div.innerHTML=html;
+
+return div;
+}
+
+function render(){
+
+document.getElementById("uke8").innerHTML="";
+document.getElementById("uke12").innerHTML="";
+
+let total=0;
+let done=0;
+
+Object.keys(exercises).forEach(group=>{
+
+exercises[group].forEach((ex,index)=>{
+
+const card=createExercise(ex,index,group);
+
+document.getElementById(group).appendChild(card);
+
+total += ex.levels.length;
+
+done += getProgress(group+"_"+index);
+
+});
+
+});
+
+const percent=Math.round((done/total)*100);
+
+document.getElementById("percent").textContent=percent+"%";
+document.getElementById("completed").textContent=done;
+
+document.getElementById("fill").style.width=percent+"%";
+
+let rank="🐾 Ny valpeeier";
+
+if(percent>20) rank="🦴 Valpevenn";
+if(percent>40) rank="🐕 Tollerpartner";
+if(percent>60) rank="🏅 Nosework-helt";
+if(percent>80) rank="🌟 Toller-mester";
+if(percent===100) rank="👑 Superfamilien";
+
+document.getElementById("rank").textContent=rank;
+
+let reward="🌱 Valpen er helt i starten av reisen!";
+
+if(percent>25) reward="🐾 Valpen blir tryggere hver uke!";
+if(percent>50) reward="🐕 Familien bygger en fantastisk relasjon!";
+if(percent>75) reward="🏅 En framtidig stjerne i nosework og tur!";
+if(percent===100) reward="👑 Målet er nådd! Fantastisk innsats!";
+
+document.getElementById("goalReward").textContent=reward;
+
+}
+
+function advance(key,level){
+
+let current=getProgress(key);
+
+if(level>current){
+setProgress(key,level);
+}
+}
+
+function showTab(id){
+
+document.querySelectorAll(".section").forEach(s=>{
+s.classList.remove("active");
+});
+
+document.querySelectorAll(".tab").forEach(t=>{
+t.classList.remove("active");
+});
+
+document.getElementById(id).classList.add("active");
+
+event.target.classList.add("active");
+}
+
+render();
+
+</script>
+
+</body>
+</html>
